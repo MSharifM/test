@@ -1,10 +1,39 @@
-argv = (ctypes.c_char_p * 3)()
-    argv[0] = b"/bin/echo"
-    argv[1] = b"hello-from-execve"
-    argv[2] = None
-    env = (ctypes.c_char_p * 1)()
-    env[0] = None
-    # This does not return if successful
-    libc.execve(b"/bin/echo", argv, env)
-    # If returns -> error
-    print("execve failed, errno:", ctypes.get_errno())
+# save as syscall_examples.py
+import os
+import sys
+
+def example_write():
+    # 1 = stdout
+    os.write(1, b"hello from os.write()\n")
+
+def example_create_file():
+    fd = os.open("testfile.txt", os.O_CREAT | os.O_WRONLY | os.O_TRUNC, 0o644)
+    os.write(fd, b"This was written by os.open/os.write/os.close\n")
+    os.close(fd)
+    print("wrote testfile.txt")
+
+def example_fork_exec():
+    pid = os.fork()
+    if pid == 0:
+        # child
+        print("child: exec ls -l")
+        os.execv("/bin/ls", ["/bin/ls", "-l"])
+        # execv برنگردد اگر موفق باشه
+    else:
+        # parent
+        pid, status = os.waitpid(pid, 0)
+        print("parent: child exited, status:", status)
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python3 syscall_examples.py [write|file|forkexec]")
+        sys.exit(1)
+    cmd = sys.argv[1]
+    if cmd == "write":
+        example_write()
+    elif cmd == "file":
+        example_create_file()
+    elif cmd == "forkexec":
+        example_fork_exec()
+    else:
+        print("unknown")
