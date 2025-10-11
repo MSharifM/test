@@ -8,7 +8,7 @@ def example_write():
     os.write(1, b"hello from os.write()\n")
 
 def meta_data():
-    info = os.stat("t.py")
+    info = os.stat("test.txt")
     print("size:", info.st_size, "bytes")
     print("last change:", time.ctime(info.st_mtime))
     print("last access:", time.ctime(info.st_atime))
@@ -29,7 +29,7 @@ def example_fork_exec():
         print(f"i am parent: {os.getpid()}")
 
 def read_file():
-    fd = os.open("t.py", os.O_RDONLY)  # → معادل open()
+    fd = os.open("test.txt", os.O_RDONLY)  # → معادل open()
     data = os.read(fd, 1000)                # → معادل read()
     print(data.decode())
 
@@ -37,48 +37,58 @@ def read_file():
 
 def read_only():
     try:
-        os.chmod("re.py", 0o444)   # معادل chmod 444
+        os.chmod("test.txt", 0o444)   # معادل chmod 444
         print("Success")
     except:
         print("Unsuccess")
 
 def unread_only():
     try:
-        mode = os.stat("re.py").st_mode
-        os.chmod("re.py", mode | 0o200) 
+        mode = os.stat("test.txt").st_mode
+        os.chmod("test.txt", mode | 0o200) 
         print("Success")
     except:
         print("Unsuccess")
 
+def delete_file():
+    try:
+        os.remove("testfile.txt") 
+        print("Succcess")
+    except:
+        print("Failed")
+
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        option = 0
-        while(option != 8):
-            print("\n[1] Write a sentence")
-            print("[2] Create new file")
-            print("[3] fork")
-            print("[4] file information")
-            print("[5] read a file")
-            print("[6] change permission")
-            print("[7] remove RO permission")
-            print("[8] exit\n")
-            option = int(input("Choose an option:"))
-            print()
+    option = 0
+    while(option != 9):
+        print("\n*****************************")
+        print("[1] Write a sentence")
+        print("[2] Create new file")
+        print("[3] Fork")
+        print("[4] File information")
+        print("[5] Read a file")
+        print("[6] ReadOnly permission")
+        print("[7] Remove RO permission")
+        print("[8] Delete file")
+        print("[9] Exit\n")
+        option = int(input("Choose an option:"))
+        print()
+
+        if(option == 1):
+            example_write()
+        elif option == 2:
+            example_create_file()
+        elif option == 3:
+            example_fork_exec()
+        elif option == 4:
+            meta_data()
+        elif option == 5:
+            read_file()
+        elif option == 6:
+            read_only()
+        elif option == 7:
+            unread_only()
+        elif option == 8:
+            delete_file()
+        else:
+            pass
             
-            if(option == 1):
-                example_write()
-            elif option == 2:
-                example_create_file()
-            elif option == 3:
-                example_fork_exec()
-            elif option == 4:
-                meta_data()
-            elif option == 5:
-                read_file()
-            elif option == 6:
-                read_only()
-            elif option == 7:
-                unread_only()
-            else:
-                pass
-        
