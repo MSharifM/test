@@ -11,8 +11,8 @@ def meta_data():
     info = os.stat("t.py")
     print("size:", info.st_size, "bytes")
     print("last change:", time.ctime(info.st_mtime))
-    print("last access:", info.st_atime, "bytes")
-    print("device ID:", info.st_dev, "bytes")
+    print("last access:", time.ctime(info.st_atime))
+    print("device ID:", info.st_dev)
 
 def example_create_file():
     fd = os.open("testfile.txt", os.O_CREAT | os.O_WRONLY | os.O_TRUNC, 0o644)
@@ -21,16 +21,12 @@ def example_create_file():
     print("wrote testfile.txt")
 
 def example_fork_exec():
+    print("befor fork:")
     pid = os.fork()
     if pid == 0:
-        # child
-        print("child: exec ls -l")
-        os.execv("/bin/ls", ["/bin/ls", "-l"])
-        # execv برنگردد اگر موفق باشه
+        print(f"i am child: {os.getpid()}")
     else:
-        # parent
-        pid, status = os.waitpid(pid, 0)
-        print("parent: child exited, status:", status)
+        print(f"i am parent: {os.getpid()}")
 
 def read_file():
     fd = os.open("t.py", os.O_RDONLY)  # → معادل open()
@@ -56,22 +52,33 @@ def unread_only():
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python3 syscall_examples.py [write|file|forkexec|metadata|read|change-per|un]")
-        sys.exit(1)
-    cmd = sys.argv[1]
-    if cmd == "write":
-        example_write()
-    elif cmd == "file":
-        example_create_file()
-    elif cmd == "forkexec":
-        example_fork_exec()
-    elif cmd == "metadata":
-        meta_data()
-    elif cmd == "read":
-        read_file()
-    elif cmd == "change-per":
-        read_only()
-    elif cmd == "un":
-        unread_only()
-    else:
-        print("unknown")
+        option = 0
+        while(option != 8):
+            print("\n[1] Write a sentence")
+            print("[2] Create new file")
+            print("[3] fork")
+            print("[4] file information")
+            print("[5] read a file")
+            print("[6] change permission")
+            print("[7] remove RO permission")
+            print("[8] exit\n")
+            option = int(input("Choose an option:"))
+            print()
+            
+            if(option == 1):
+                example_write()
+            elif option == 2:
+                example_create_file()
+            elif option == 3:
+                example_fork_exec()
+            elif option == 4:
+                meta_data()
+            elif option == 5:
+                read_file()
+            elif option == 6:
+                read_only()
+            elif option == 7:
+                unread_only()
+            else:
+                pass
+        
